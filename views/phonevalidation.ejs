@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' href='/stylesheets/bootstrap.css'/>
+</head>
+<body>
+
+<div class="container">
+    <form class="form-group">
+        <label for="phone_number" class="control-label">Phone number</label>
+        <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="phone_number">
+    </form>
+
+    <button class="btn btn-default" type="button" onclick="validate()">Validate</button>
+</div>
+
+
+<script>
+    function validate() {
+        var phone_number = document.getElementById("phone_number");
+
+        var data = {
+            phone_number: phone_number.value
+        };
+
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/validatePhone";
+        xmlhttp.open('post', url, true);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                console.log(JSON.parse(xmlhttp.response));
+                if (xmlhttp.status == 200) {
+                    //window.location = "/admin" + "/index";
+
+                }
+                else {
+                    //document.getElementById("status").style.display = "block";
+                    //document.getElementById("status").innerHTML = "<strong>error</strong> " + xmlhttp.status;
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(data));
+    }
+</script>
+
+</body>
+</html>

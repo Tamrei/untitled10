@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel='stylesheet' href='/stylesheets/bootstrap.css'/>
+
+    <style>
+        input, textarea, select {
+            border: 2px solid #8eaac9 !important;
+            border-radius: 0 !important;
+            font: 16px 'Open Sans', sans-serif !important;
+            color: #717171;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <a href="/phonevalidation" style="font-size: 35px">Phone validation</a>
+
+    <div id="stage1">
+        <form class="form-group">
+            <label for="tezGSM" class="control-label">TezGSM No.</label>
+            <input type="text" class="form-control" id="tezGSM" name="tezGSM" placeholder="tezGSM">
+
+            <label for="amount" class="control-label">amount</label>
+            <select class="form-control" id="amount" name="amount">
+                <option>1</option>
+                <option>5</option>
+            </select>
+            <label for="currency" class="control-label">currency</label>
+            <select class="form-control" id="currency" name="currency">
+                <option>UAN</option>
+                <option>EUR</option>
+            </select>
+            <label for="payment_type" class="control-label">payment_type</label>
+            <select class="form-control" id="payment_type" name="payment_type">
+                <option>VISA</option>
+                <option>Portmone.com</option>
+            </select>
+        </form>
+        <button class="btn btn-default" onclick="add(event)" id="add">Add</button>
+
+        <button class="btn btn-primary" onclick="nextStep()">Next Step</button>
+
+        <table class="table table-bordered" style="margin-top: 50px">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>TezGSM No.</th>
+                <th>Price</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+
+            </tbody>
+        </table>
+    </div>
+    <div id="stage2" style="display: none">
+        <form class="form-group">
+            <div class="form-group">
+                <label class="control-label" for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="name">
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="surname">Surname</label>
+                <input type="text" class="form-control" id="surname" name="surname" placeholder="surname">
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="phone">Phone</label>
+                <input type="number" class="form-control" id="phone" name="phone" placeholder="phone">
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="eMail">eMail</label>
+                <input type="email" class="form-control" id="eMail" name="eMail" placeholder="eMail">
+            </div>
+            <label for="country" class="control-label">payment_type</label>
+            <select class="form-control" id="country" name="country">
+                <option>USA</option>
+                <option>Ukraine</option>
+            </select>
+            <div class="form-group">
+                <label class="control-label" for="city">City</label>
+                <input type="email" class="form-control" id="city" name="city" placeholder="eMail">
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="address">Address</label>
+                <input type="email" class="form-control" id="address" name="address" placeholder="Address">
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="post_code">Post code</label>
+                <input type="email" class="form-control" id="post_code" name="post_code" placeholder="Post code">
+            </div>
+
+        </form>
+
+        <button class="btn btn-primary" onclick="prevStep()">Prev Step</button>
+        <button class="btn btn-primary" onclick="nextStep()">Next Step</button>
+    </div>
+    <div id="stage3" style="display: none">
+        <h1>stage3</h1>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>TezGSM No.</th>
+                <th>Price</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody id="table_body2">
+
+            </tbody>
+        </table>
+
+        <button class="btn btn-primary" onclick="prevStep()">Prev Step</button>
+
+        <button class="btn btn-warning" onclick="sendReq()">TEST REQ</button>
+
+        <button type="button" onclick="getForm()" class="btn btn-default">get Form</button>
+
+        <div id="hiddenForm" style="display: none">
+            <form id="form" method="POST" action="https://api.fondy.eu/api/checkout/redirect/">
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    function getForm() {
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/getForm";
+        xmlhttp.open('post', url, false);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    //window.location = "/admin" + "/index";
+                    console.log(xmlhttp.response);
+                    var resobj = JSON.parse(xmlhttp.response);
+                    console.log(resobj);
+
+                    var form = document.getElementById("form");
+                    var order_id = document.createElement("input");
+                    order_id.setAttribute('type',"text");
+                    order_id.setAttribute('name',"order_id");
+                    order_id.setAttribute('value', resobj.order_id);
+
+                    var order_desc = document.createElement("input");
+                    order_desc.setAttribute('type',"text");
+                    order_desc.setAttribute('name',"order_desc");
+                    order_desc.setAttribute('value', resobj.order_desc);
+
+                    var currency = document.createElement("input");
+                    currency.setAttribute('type',"text");
+                    currency.setAttribute('name',"currency");
+                    currency.setAttribute('value', resobj.currency);
+
+                    var amount = document.createElement("input");
+                    amount.setAttribute('type',"text");
+                    amount.setAttribute('name',"amount");
+                    amount.setAttribute('value', resobj.amount);
+
+                    var merchant_id = document.createElement("input");
+                    merchant_id.setAttribute('type',"text");
+                    merchant_id.setAttribute('name',"merchant_id");
+                    merchant_id.setAttribute('value', resobj.merchant_id);
+
+                    var signature = document.createElement("input");
+                    signature.setAttribute('type',"text");
+                    signature.setAttribute('name',"signature");
+                    signature.setAttribute('value', resobj.signature);
+
+                    form.appendChild(order_id);
+                    form.appendChild(signature);
+                    form.appendChild(order_desc);
+                    form.appendChild(currency);
+                    form.appendChild(amount);
+                    form.appendChild(merchant_id);
+
+                    form.submit();
+
+                } else {
+                    //document.getElementById("status").style.display = "block";
+                    //document.getElementById("status").innerHTML = "<strong>error</strong> " + xmlhttp.status;
+                }
+            }
+        };
+        xmlhttp.send();
+    }
+
+</script>
+
+
+<script>
+
+    function sendReq() {
+        var data = {
+            "request": {
+                "server_callback_url": "https://site.com/callback/",
+                "response_url": "https://site.com/responsepage/",
+                "order_id": "test4207135583456",
+                "order_desc": "Test payment",
+                "currency": "RUB",
+                "amount": "10",
+                "merchant_id": "1396424"
+            }
+        };
+
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/proceedPayment";
+        xmlhttp.open('post', url, true);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    //window.location = "/admin" + "/index";
+                }
+                else {
+                    //document.getElementById("status").style.display = "block";
+                    //document.getElementById("status").innerHTML = "<strong>error</strong> " + xmlhttp.status;
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(data));
+    }
+
+
+    function proceedPayment() {
+
+        var body = {
+            "request": {
+                "order_id": "test123456",
+                "order_desc": "test order",
+                "currency": "USD",
+                "amount": "125",
+                "signature": "f0ee6288b9295d3b808bcd8d720211c7201245e1",
+                "merchant_id": "1396424"
+            }
+        };
+
+        var xmlhttp = new XMLHttpRequest();
+        var url = "https://api.fondy.eu/api/checkout/redirect/";
+        xmlhttp.open('post', url, true);
+        //xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    console.log(xmlhttp.status);
+                } else {
+                    console.log(xmlhttp.status);
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(body));
+    }
+
+    var step = 1;
+    function nextStep() {
+        document.getElementById("stage" + step).style["display"] = "none";
+        step++;
+        if (step == 3) {
+            drawTable("table_body2");
+        }
+        document.getElementById("stage" + step).style["display"] = "block";
+    }
+
+    function prevStep() {
+        document.getElementById("stage" + step).style["display"] = "none";
+        if (step == 3) {
+            document.getElementById("table_body2").innerHTML = "";
+        }
+        step--;
+        document.getElementById("stage" + step).style["display"] = "block";
+    }
+
+
+    function drawTable(elemId) {
+        var tableBody = document.getElementById(elemId);
+        var paymentsTEZGSM = JSON.parse(localStorage["paymentsTEZGSM"]);
+        for (var i = 0; i < paymentsTEZGSM.length; i++) {
+            var row = tableBody.insertRow(i);
+            //row.setAttribute("id", "" + i);
+            var c1 = row.insertCell(0);
+            var c2 = row.insertCell(1);
+            var c3 = row.insertCell(2);
+            var c4 = row.insertCell(3);
+            c1.innerHTML = "Top-up for " + paymentsTEZGSM[i].amount + " " + paymentsTEZGSM[i].currency;
+            c2.innerHTML = paymentsTEZGSM[i].tezGSMnumb;
+            c3.innerHTML = paymentsTEZGSM[i].amount + " " + paymentsTEZGSM[i].currency;
+            c4.innerHTML = '<a href="#" onclick="deleteS(' + i + ')">Delete</a>';
+        }
+    }
+
+
+    drawTable("table_body");
+
+
+    function getPersonalData() {
+        var name = document.getElementById("name").value;
+        var surname = document.getElementById("surname").value;
+        var phone = document.getElementById("phone").value;
+        var eMail = document.getElementById("eMail").value;
+        //var paymentType = document.getElementById("paymentType").value;
+        var city = document.getElementById("city").value;
+        var address = document.getElementById("address").value;
+        var postCode = document.getElementById("post_code").value;
+
+        var obj = {
+            name: name,
+            surname: surname,
+            phone: phone,
+            email: eMail,
+            city: city,
+            address: address,
+            postCode: postCode
+        };
+
+        return obj;
+    }
+
+
+    function deleteS(index) {
+        console.log(index);
+        var tableBody = document.getElementById("table_body");
+        //tableBody.rows[index].innerHTML = "";
+        deleteEvent(index); //
+        document.getElementById("table_body").innerHTML = "";
+        drawTable("table_body");
+    }
+
+    function deleteEvent(index) {
+        var key = "paymentsTEZGSM";
+        var eventArray = JSON.parse(localStorage.getItem(key));
+        eventArray.splice(index, 1);
+        localStorage.setItem(key, JSON.stringify(eventArray));
+    }
+
+
+    function add(e) {
+        var tezGSMnumb = document.getElementById("tezGSM").value;
+        var amount = document.getElementById("amount").value;
+        var currency = document.getElementById("currency").value;
+        var paymentType = document.getElementById("payment_type").value;
+
+        var obj = {
+            tezGSMnumb: tezGSMnumb,
+            amount: amount,
+            currency: currency,
+            payment_type: paymentType
+        };
+
+        saveEvent(obj);
+        //addToTable(obj);
+        document.getElementById("table_body").innerHTML = "";
+        drawTable("table_body");
+    }
+
+
+    function addToTable(obj) {
+        var tableBody = document.getElementById("table_body");
+        var row = tableBody.insertRow(0);
+        var c1 = row.insertCell(0);
+        var c2 = row.insertCell(1);
+        var c3 = row.insertCell(2);
+        c1.innerHTML = "Top-up for " + obj.amount + " " + obj.currency;
+        c2.innerHTML = obj.tezGSMnumb;
+        c3.innerHTML = obj.amount + " " + obj.currency;
+    }
+
+
+    function saveEvent(obj) {
+        var key = "paymentsTEZGSM";
+        if (localStorage.getItem(key) === null) {
+            var storage = [];
+            storage.push(obj);
+            localStorage.setItem(key, JSON.stringify(storage));
+        } else {
+            var taskArray = JSON.parse(localStorage.getItem(key));
+            taskArray.push(obj);
+            localStorage.setItem(key, JSON.stringify(taskArray));
+        }
+    }
+
+
+</script>
+
+</body>
+</html>
