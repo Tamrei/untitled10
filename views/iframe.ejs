@@ -23,6 +23,17 @@
     function createPaymentFrame(containerId) {
         var container = document.getElementById(containerId);
     }
+
+    window.onbeforeunload = function(e) {
+        var message = e.href , e = e || window.event;
+        // For IE and Firefox
+        if (e) {
+            e.returnValue = message;
+        }
+        // For Safari
+        return message;
+    };
+
 </script>
 
 <div>

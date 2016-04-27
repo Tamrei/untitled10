@@ -8,9 +8,13 @@ script = script[script.length - 1];
 
 var scriptAtributes = script.attributes;
 var ifrm = document.createElement("IFRAME");
+ifrm.frameBorder = 0;
 prepareFrame(ifrm, script.parentElement);
 var iframeDoc = ifrm.contentWindow.document;
 
+ifrm.addEventListener("unload", function () {
+    alert("UNLOAD!");
+});
 
 var html = '<form>' +
         '<label for="order_id">Order_id</label>' +
@@ -25,9 +29,6 @@ var html = '<form>' +
         '<input type="text" id="merchant_id" name="merchant_id" value="1396424">' +
         '</form>' +
         '<button onclick="sendData()">Send data</button>';
-
-
-
 
 
 var initialCss =
@@ -59,12 +60,16 @@ var iframeScript = 'function sendData() {' +
     'xmlhttp.onreadystatechange = function () {' +
     'if (xmlhttp.readyState == XMLHttpRequest.DONE) {' +
     'if (xmlhttp.status == 200) {' +
+    'window.location = url;' +
     '} else {' +
     '}' +
     '}' +
     '};' +
     'xmlhttp.send(JSON.stringify(data));' +
     '};';
+
+
+var iframeRedirectsScript;
 
 prepareHTML(html);
 prepareStyle(css);
@@ -98,11 +103,10 @@ function prepareHTML(html) {
     ifrm.contentWindow.document.close();
 }
 
+
 function prepateForm() {
 
 }
-
-
 
 
 function sendData() {
@@ -132,7 +136,7 @@ function sendData() {
         }
     };
     xmlhttp.send(JSON.stringify(data));
-};
+}
 
 function prepareScript (s) {
     var ifrmHead = iframeDoc.getElementsByTagName('head')[0];
