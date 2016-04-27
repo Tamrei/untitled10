@@ -19,7 +19,7 @@
 
 <div class="container">
 
-    <a href="/phonevalidation" style="font-size: 35px">Phone validation</a>
+    <a href="/phonevalidation" style="font-size: 30px">Phone validation</a>
 
     <div id="stage1">
         <form class="form-group">
@@ -62,6 +62,7 @@
     </div>
     <div id="stage2" style="display: none">
         <form class="form-group">
+
             <div class="form-group">
                 <label class="control-label" for="name">Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="name">
@@ -120,23 +121,44 @@
             </tbody>
         </table>
 
+        <!--
         <button class="btn btn-primary" onclick="prevStep()">Prev Step</button>
-
         <button class="btn btn-warning" onclick="sendReq()">TEST REQ</button>
-
         <button type="button" onclick="getForm()" class="btn btn-default">get Form</button>
 
         <div id="hiddenForm" style="display: none">
             <form id="form" method="POST" action="https://api.fondy.eu/api/checkout/redirect/">
-
             </form>
         </div>
+        -->
+
+        <button type="button" onclick="proceed()" class="btn btn-default">Proceed</button>
 
     </div>
 </div>
 
 
 <script>
+    function proceed() {
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/proceedPayment";
+        xmlhttp.open('post', url, false);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    var obj = JSON.parse(xmlhttp.response);
+                    window.location = obj.checkout_url;
+                } else {
+                    console.log(xmlhttp.response);
+                }
+            }
+        };
+        xmlhttp.send();
+    }
+
+
+
     function getForm() {
         var xmlhttp = new XMLHttpRequest();
         var url = "/getForm";
@@ -205,17 +227,6 @@
 <script>
 
     function sendReq() {
-        var data = {
-            "request": {
-                "server_callback_url": "https://site.com/callback/",
-                "response_url": "https://site.com/responsepage/",
-                "order_id": "test4207135583456",
-                "order_desc": "Test payment",
-                "currency": "RUB",
-                "amount": "10",
-                "merchant_id": "1396424"
-            }
-        };
 
         var xmlhttp = new XMLHttpRequest();
         var url = "/proceedPayment";
@@ -232,38 +243,10 @@
                 }
             }
         };
-        xmlhttp.send(JSON.stringify(data));
+        xmlhttp.send("");
+        //xmlhttp.send(JSON.stringify(data));
     }
 
-
-    function proceedPayment() {
-
-        var body = {
-            "request": {
-                "order_id": "test123456",
-                "order_desc": "test order",
-                "currency": "USD",
-                "amount": "125",
-                "signature": "f0ee6288b9295d3b808bcd8d720211c7201245e1",
-                "merchant_id": "1396424"
-            }
-        };
-
-        var xmlhttp = new XMLHttpRequest();
-        var url = "https://api.fondy.eu/api/checkout/redirect/";
-        xmlhttp.open('post', url, true);
-        //xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-                if (xmlhttp.status == 200) {
-                    console.log(xmlhttp.status);
-                } else {
-                    console.log(xmlhttp.status);
-                }
-            }
-        };
-        xmlhttp.send(JSON.stringify(body));
-    }
 
     var step = 1;
     function nextStep() {
