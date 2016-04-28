@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" id="wrap">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/javascripts/ipsp.js"></script>
+    <style>
+        iframe {
+            height: 700px !important;
+        }
+    </style>
+</head>
+<body >
+<div id="checkout">
+    <div id="checkout_wrapper"></div>
+</div>
+</body>
+
+
+<script>
+    function __DEFAULTCALLBACK__(data,type){
+        var form;
+        console.log('action',data.action);
+        console.log('url',data.url);
+        for(var prop in data.send_data){
+            if(data.send_data.hasOwnProperty(prop)){
+                console.log(prop,data.send_data[prop]);
+            }
+        }
+        if ( data.error){
+            console.log(data,data.error);
+            return;
+        }
+        if (data.action == 'redirect') {
+            this.loadUrl(data.url);
+            return;
+        }
+
+        if (data.send_data.order_status == 'delayed') {
+            this.unbind('ready');
+            this.hide();
+            return;
+        } else {
+            this.unbind('ready').action('ready', function() {
+                this.show();
+            });
+        }
+
+        if( data.send_data && data.url ){
+            form = prepareFormData(data.url,data.send_data);
+            this.find('body').appendChild(form);
+            form.submit();
+            form.parentNode.removeChild(form);
+        }
+    }
+
+    function checkoutInit(url) {
+        $ipsp('checkout').scope(function() {
+            this.setCheckoutWrapper('#wrap');
+            this.addCallback(__DEFAULTCALLBACK__);
+
+
+
+            /*this.action('show', function(data) {
+                $('#checkout_loader').remove();
+                $('#checkout').show();
+            });
+            this.action('hide', function(data) {
+                $('#checkout').hide();
+            });
+            this.action('resize', function(data) {
+                $('#checkout_wrapper').width(480).height(600);
+            });
+            */
+            this.loadUrl(url);
+        });
+    };
+
+    checkoutInit('https://api.fondy.eu/api/checkout?token=0b9856e5a16377375ab8861fdd4d806e035a576f');
+</script>
+
+</html>

@@ -3,86 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <!--<link rel='stylesheet' href='res/bootstrap.css'/>-->
-
-    <!--<script src="/javascripts/testFile.js"></script>-->
-    <script src="/javascripts/ipsp.js"></script>
-
+    <link rel='stylesheet' href='/stylesheets/bootstrap.css'/>
 </head>
 <body>
 
-<div class="plug-container">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <script
+                    src="/javascripts/jsf.js"
+                    data-background-color="#F2F2F2"
+                    data-body-border="1px solid black"
+                    data-color="white"
+                    data-width="640"
+                    data-height="480"
+                    data-body-border-radius="0">
+
+            </script>
+        </div>
+
+        <div class="col-md-4">
+            <script
+                    src="/javascripts/jsf.js"
+                    data-background-color="green"
+                    data-color="black"
+                    data-width="480"
+                    data-height="480"
+                    data-body-border-radius="10">
+
+            </script>
+        </div>
+
+        <div class="col-md-4">
+            <script
+                    src="/javascripts/jsf.js"
+                    data-background-color="yellow"
+                    data-color="red"
+                    data-width="1200"
+                    data-height="700"
+                    data-body-border-radius="20">
+
+            </script>
+        </div>
+
+        <div class="col-md-4">
+            <script
+                    src="/javascripts/jsf.js"
+                    data-background-color="blue"
+                    data-color="white"
+                    data-width="768"
+                    data-height="1024"
+                    data-body-border-radius="5">
+
+            </script>
+        </div>
+    </div>
 </div>
-
-
-<script>
-    console.log("script tag N1");
-</script>
-
-
-<script>
-</script>
-
-<script>
-    function createPaymentFrame(containerId) {
-        //var container = document.getElementById(containerId);
-    }
-
-    /*
-    window.onbeforeunload = function(e) {
-        var message = e.href , e = e || window.event;
-        // For IE and Firefox
-        if (e) {
-            e.returnValue = message;
-        }
-        // For Safari
-        return message;
-    };
-    */
-
-</script>
-
-<div style="display: inline-block;">
-
-<div>
-    <script src="/javascripts/jsf.js" data-color="red" data-background-color="gray"></script>
-</div>
-
-<div>
-    <script src="/javascripts/jsf.js" data-color="red" data-background-color="green"></script>
-</div>
-
-<div>
-    <script src="/javascripts/jsf.js" data-color="red" data-background-color="yellow"></script>
-</div>
-
-<div>
-    <script src="/javascripts/jsf.js" data-color="red" data-background-color="blue"></script>
-</div>
-
-</div>
-<div>
-
-    <button onclick="testifrm()"></button>
-
-    <script>
-        var ifrm = document.getElementById("thisframe");
-        console.log(ifrm);
-
-
-
-        function testifrm() {
-            $ipsp('checkout').loadUrl('https://api.fondy.eu/api/checkout?token=43b034570fc0b822afe86823a5a53fd9a232630f');
-        }
-    </script>
-</div>
-
-<script>
-</script>
-
-
-<script>
-</script>
 
 </body>
 </html>
