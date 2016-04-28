@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel='stylesheet' href='res/bootstrap.css'/>
+    <!--<link rel='stylesheet' href='res/bootstrap.css'/>-->
+
+    <!--<script src="/javascripts/testFile.js"></script>-->
+    <script src="/javascripts/ipsp.js"></script>
+
 </head>
 <body>
 
@@ -21,9 +25,10 @@
 
 <script>
     function createPaymentFrame(containerId) {
-        var container = document.getElementById(containerId);
+        //var container = document.getElementById(containerId);
     }
 
+    /*
     window.onbeforeunload = function(e) {
         var message = e.href , e = e || window.event;
         // For IE and Firefox
@@ -33,11 +38,43 @@
         // For Safari
         return message;
     };
+    */
 
 </script>
 
+<div style="display: inline-block;">
+
 <div>
     <script src="/javascripts/jsf.js" data-color="red" data-background-color="gray"></script>
+</div>
+
+<div>
+    <script src="/javascripts/jsf.js" data-color="red" data-background-color="green"></script>
+</div>
+
+<div>
+    <script src="/javascripts/jsf.js" data-color="red" data-background-color="yellow"></script>
+</div>
+
+<div>
+    <script src="/javascripts/jsf.js" data-color="red" data-background-color="blue"></script>
+</div>
+
+</div>
+<div>
+
+    <button onclick="testifrm()"></button>
+
+    <script>
+        var ifrm = document.getElementById("thisframe");
+        console.log(ifrm);
+
+
+
+        function testifrm() {
+            $ipsp('checkout').loadUrl('https://api.fondy.eu/api/checkout?token=43b034570fc0b822afe86823a5a53fd9a232630f');
+        }
+    </script>
 </div>
 
 <script>
@@ -48,4 +85,4 @@
 </script>
 
 </body>
-</html
+</html>

@@ -23,8 +23,8 @@ router.post('/payparams', function (req, res, next) {
     paymentObj = sortObject(data);
     paymentSygnature = getSignaturizableStr(paymentObj);
     signature = sha1(paymentSygnature);
-    console.log(signature);
-    console.log(paymentSygnature);
+    //console.log(signature);
+    //console.log(paymentSygnature);
 
     res.status(200).end()
 });
@@ -119,6 +119,35 @@ router.post('/validatePhone', function (req, res, next) {
         }
     });
 });
+
+router.post('/getPaymentForm', function (req, res, next) {
+    var data = req.body;
+    data = JSON.stringify(data);
+    data = JSON.parse(data);
+
+    paymentObj = sortObject(data);
+    paymentSygnature = getSignaturizableStr(paymentObj);
+    signature = sha1(paymentSygnature);
+
+    data.signature = signature;
+    var stq = qs.stringify(data);
+    console.log(stq);
+
+    request({
+        url: 'https://api.fondy.eu/api/checkout/url/', method: "POST",
+        headers: {"content-type": "application/x-www-form-urlencoded"}, body: stq
+    }, function (error, response, body) {
+        var resObj = (qs.parse(body));
+        if (resObj.response_status == "success") {
+            console.log(resObj);
+            res.send(resObj);
+        } else {
+            console.log(resObj);
+            res.status(500).end();
+        }
+    });
+});
+
 
 
 router.post('/proceedPayment', function (req, res, next) {
