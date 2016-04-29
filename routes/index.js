@@ -78,6 +78,10 @@ router.get('/phonevalidation', function (req, res, next) {
 });
 
 
+router.get('/example', function (req, res, next) {
+    res.render('ticetsua', {title: 'Express'});
+});
+
 /**
  *
  */

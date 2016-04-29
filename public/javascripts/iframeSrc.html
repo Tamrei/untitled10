@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" id="wrap">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/javascripts/ipsp.js"></script>
+
+    <style>
+        input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 22px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 15px;
+            margin: 2px 0 2px 0;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+<body>
+
+
+<div id="checkout_wrapper">
+    <div id="doc">
+        <form id="phone_form">
+            <label for="phone_number">Phone number</label>
+            <input type="text" onchange="validate()" id="phone_number" name="phone_number" placeholder="phone_number">
+            <label for="order_desc">Order desc</label>
+            <input type="text" id="order_desc" name="order_desc" value="Test payment">
+            <label for="amount">Amount</label>
+            <input type="text" id="amount" name="amount" value="100">
+            <label for="currency">Currency</label>
+            <input type="text" id="currency" name="currency" value="RUB">
+            <label for="merchant_id">merchant_id (use 1396424 for testing)</label>
+            <input type="text" id="merchant_id" name="merchant_id" value="1396424">
+        </form>
+        <button onclick="sendData()">Proceed Payment</button>
+    </div>
+</div>
+
+<script>
+    'use strict';
+
+    function sendData() {
+        var orderDesc = document.getElementById("order_desc");
+        var currency = document.getElementById("currency");
+        var amount = document.getElementById("amount");
+        var merchantID = document.getElementById("merchant_id");
+        var data = {
+            "order_desc": orderDesc.value,
+            "currency": currency.value,
+            "amount": amount.value,
+            "merchant_id": merchantID.value
+        };
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/payment/getPaymentForm";
+        xmlhttp.open("post", url, true);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    var resobj = JSON.parse(xmlhttp.response);
+                    console.log(resobj);
+                    document.getElementById("doc").style.display = "none";
+                    document.getElementsByTagName("body")[0].style.margin = "0";
+                    iframeProceed(resobj.checkout_url);
+                    console.log();
+                } else {
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(data));
+    }
+
+
+    var checkoutStyles = {
+        ".pages-checkout": {
+            //"overflow": "hidden",
+            //"height": "500px"
+        }
+    };
+
+
+    function iframeProceed(url) {
+        $ipsp("checkout").scope(function () {
+            this.setCheckoutWrapper("#checkout_wrapper");
+            this.setCssStyle(checkoutStyles);
+            this.addCallback(__DEFAULTCALLBACK__);
+            this.loadUrl(url);
+        });
+    }
+
+
+    function validate() {
+        var phone_number = document.getElementById("phone_number");
+        var phone_form = document.getElementById("phone_form");
+        var data = {phone_number: phone_number.value};
+        var xmlhttp = new XMLHttpRequest();
+        var url = "/payment/validatePhone";
+        xmlhttp.open("post", url, true);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    if (xmlhttp.response == "error") {
+                        console.log("error");
+                    } else if (xmlhttp.response == "success") {
+                        console.log("success");
+                    } else {
+                        console.log(xmlhttp.status);
+                    }
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(data));
+    }
+</script>
+
+</body>
+</html>

@@ -44,6 +44,13 @@ function getSignaturizableStr(obj) {
 }
 
 
+router.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+
 router.post('/getPaymentForm', function (req, res, next) {
     var data = req.body;
     var generatedOrderId = uuid.v1();
