@@ -86,7 +86,6 @@ var initialCss =
     "" +
     "";
 
-
 var buttonStl =
     "button {" +
     "border: none;" +
@@ -99,7 +98,6 @@ var buttonStl =
     "margin: 4px 2px;" +
     "cursor: pointer;" +
     "}";
-
 
 var style400px =
     "@media screen and (min-width: 400px) {" +
@@ -116,7 +114,6 @@ var style400px =
 
 
 initialCss += buttonStl;
-
 
 var inputStyle =
     "input[type=text], select {" +
@@ -143,7 +140,7 @@ function phoneValidate() {
     var phone_form = document.getElementById("phone_form");
     var data = {phone_number: phone_number.value};
     var xmlhttp = new XMLHttpRequest();
-    var url = "http://localhost:3000/payment/validatePhone";
+    var url = "http://localhost:3000/validatePhone";
     xmlhttp.open("post", url, true);
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.onreadystatechange = function () {
@@ -163,9 +160,9 @@ function phoneValidate() {
 }
 
 function hideFirstFrm() {
-    document.getElementById("doc").style.display = "none";
-    document.getElementsByTagName("body")[0].style.margin = "0";
-    iframeProceed();
+    //document.getElementById("doc").style.display = "none";
+    //document.getElementsByTagName("body")[0].style.margin = "0";
+    //iframeProceed();
 }
 
 function __DEFAULTCALLBACK__(data, type) {
@@ -210,7 +207,7 @@ function sendData() {
     };
 
     var xmlhttp = new XMLHttpRequest();
-    var url = "http://localhost:3000/payment/getPaymentForm";
+    var url = "http://localhost:3000/getPaymentForm";
     xmlhttp.open("post", url, false);
     xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlhttp.onreadystatechange = function () {
@@ -220,7 +217,6 @@ function sendData() {
                 document.getElementById("doc").style.display = "none";
                 document.getElementsByTagName("body")[0].style.margin = "0";
                 iframeProceed(resobj.checkout_url);
-                console.log();
             } else {
 
             }
@@ -229,9 +225,18 @@ function sendData() {
     xmlhttp.send(JSON.stringify(data));
 }
 
+function ifrmProceed(url) {
+    $ipsp("checkout").scope(function () {
+        this.setCheckoutWrapper("#checkout_wrapper");
+        this.setCssStyle(checkoutStyles);
+        this.addCallback(__DEFAULTCALLBACK__);
+        this.loadUrl(url);
+    });
+}
+
 var phoneValidateStr = eval(phoneValidate);
 var proceedPaymStr = eval(sendData);
-var hideFistFrmStr = eval(hideFirstFrm);
+var hideFistFrmStr = eval(ifrmProceed);
 var callbackStr = eval(__DEFAULTCALLBACK__);
 
 var scrpt = phoneValidateStr + " " + proceedPaymStr + " " + hideFistFrmStr + " " + callbackStr;
