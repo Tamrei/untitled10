@@ -21,7 +21,7 @@ var html =
     //'<label for="order_id">Order_id</label>' +
     //'<input type="text" id="order_id" name="order_id" value="test4207135583456">' +
     '<label for="phone_number">Phone number</label>' +
-    '<input type="text" onchange="validate()" id="phone_number" name="phone_number" placeholder="phone_number">' +
+    '<input type="text" onchange="phoneValidate()" id="phone_number" name="phone_number" placeholder="phone_number">' +
     '<label for="order_desc">Order desc</label>' +
     '<input type="text" id="order_desc" name="order_desc" value="Test payment">' +
     //'<input type="text" id="amount" name="amount" value="100">' +
@@ -51,15 +51,26 @@ var html =
     '</div>';
 
 
-var nextStep = function nextStep() {
-    var i = 5;
-    alert(i);
-};
+/*
+ var step = 1;
+ function nextStep() {
+ document.getElementById("stage" + step).style["display"] = "none";
+ step++;
+ if (step == 3) {
+ drawTable("table_body2");
+ }
+ document.getElementById("stage" + step).style["display"] = "block";
+ }
 
-var passthis = nextStep + " ";
-
-console.log(passthis);
-
+ function prevStep() {
+ document.getElementById("stage" + step).style["display"] = "none";
+ if (step == 3) {
+ document.getElementById("table_body2").innerHTML = "";
+ }
+ step--;
+ document.getElementById("stage" + step).style["display"] = "block";
+ }
+ */
 
 
 var initialCss =
@@ -101,14 +112,6 @@ var style400px =
     "body { margin: 0; position: relative; overflow: hidden;}" +
     ".inline-frm { display: inline-flex; width: 100%; }" +
     "label {display: none;}" +
-    "" +
-    "" +
-    "" +
-    "" +
-    "" +
-    "" +
-    "" +
-    "" +
     "}";
 
 
@@ -133,88 +136,107 @@ var inputStyle =
     "font-size: 15px;" +
     "margin: 2px 0 2px 0;" +
     "cursor: pointer;}" +
-
     "";
 
-/*
- width: 100%;
- padding: 10px 18px;
- margin: 8px 0;
- box-sizing: border-box;
- font-size: 16px;
- */
+function phoneValidate() {
+    var phone_number = document.getElementById("phone_number");
+    var phone_form = document.getElementById("phone_form");
+    var data = {phone_number: phone_number.value};
+    var xmlhttp = new XMLHttpRequest();
+    var url = "http://localhost:3000/payment/validatePhone";
+    xmlhttp.open("post", url, true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+            if (xmlhttp.status == 200) {
+                if (xmlhttp.response == "error") {
+                    console.log("error");
+                    document.getElementById("phone_number").style.border = "1px solid red";
+                } else if (xmlhttp.response == "success") {
+                    console.log("success");
+                } else {
+                }
+            }
+        }
+    };
+    xmlhttp.send(JSON.stringify(data));
+}
 
-var css = "h1 { color: white }";
+function hideFirstFrm() {
+    document.getElementById("doc").style.display = "none";
+    document.getElementsByTagName("body")[0].style.margin = "0";
+    iframeProceed();
+}
 
+function __DEFAULTCALLBACK__(data, type) {
+    var form;
+    if (data.error) {
+        return;
+    }
+    if (data.action == "redirect") {
+        this.loadUrl(data.url);
+        return;
+    }
+    if (data.send_data.order_status == "delayed") {
+        this.unbind("ready");
+        this.hide();
+        return;
+    } else {
+        this.unbind("ready").action("ready", function () {
+            this.show();
+        });
+    }
+    if (data.send_data && data.url) {
+        form = prepareFormData(data.url, data.send_data);
+        this.find("body").appendChild(form);
+        form.submit();
+        form.parentNode.removeChild(form);
+    }
+}
 
-var phoneValidateScript =
-    'function validate() {' +
-    'var phone_number = document.getElementById("phone_number");' +
-    'var phone_form = document.getElementById("phone_form");' +
-    'var data = { phone_number: phone_number.value };' +
-    'var xmlhttp = new XMLHttpRequest();' +
-    'var url = "http://localhost:3000/payment/validatePhone";' +
-    'xmlhttp.open("post", url, true);' +
-    'xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");' +
-    'xmlhttp.onreadystatechange = function () {' +
-    'if (xmlhttp.readyState == XMLHttpRequest.DONE) {' +
-    'if (xmlhttp.status == 200) {' +
-    'if (xmlhttp.response == "error") {' +
-    'console.log("error");' +
-    'document.getElementById("phone_number").style.border = "1px solid red";' +
-    '} else if (xmlhttp.response == "success") {' +
-    'console.log("success");' +
-    '} else {' +
-    '}' +
-    '}' +
-    '}' +
-    '};' +
-    'xmlhttp.send(JSON.stringify(data));' +
-    '}';
-
-
-var iframeScript =
-    'function sendData() {' +
+function sendData() {
     //'var orderId = document.getElementById("order_id");' +
-    'var orderDesc = document.getElementById("order_desc");' +
-    'var currency = document.getElementById("currency");' +
-    'var amount = document.getElementById("amount");' +
-    'var merchantID = document.getElementById("merchant_id");' +
-    'var data = {' +
-    //'"order_id": orderId.value,' +
-    '"order_desc": orderDesc.value,' +
-    '"currency": currency.value,' +
-    '"amount": amount.value,' +
-    '"merchant_id": merchantID.value' +
-    '};' +
-    'var xmlhttp = new XMLHttpRequest();' +
-    'var url = "http://localhost:3000/payment/getPaymentForm";' +
-    'xmlhttp.open("post", url, false);' +
-    'xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");' +
-    'xmlhttp.onreadystatechange = function () {' +
-    'if (xmlhttp.readyState == XMLHttpRequest.DONE) {' +
-    'if (xmlhttp.status == 200) {' +
-    'var resobj = JSON.parse(xmlhttp.response);' +
-    'console.log(resobj);' +
-    'document.getElementById("doc").style.display = "none";' +
-    'document.getElementsByTagName("body")[0].style.margin = "0";' +
-    'iframeProceed(resobj.checkout_url);' +
-    'console.log();' +
-    '} else {' +
-    '}' +
-    '}' +
-    '};' +
-    'xmlhttp.send(JSON.stringify(data));' +
-    '}';
+    var orderDesc = document.getElementById("order_desc");
+    var currency = document.getElementById("currency");
+    var amount = document.getElementById("amount");
+    var merchantID = document.getElementById("merchant_id");
 
-var iframeHideIndex =
-    'function hideIndex() {' +
-    'document.getElementById("doc").style.display = "none";' +
-    'document.getElementsByTagName("body")[0].style.margin = "0";' +
-    'iframeProceed();' +
-    '}';
+    var data = {
+        //'"order_id": orderId.value,' +
+        "order_desc": orderDesc.value,
+        "currency": currency.value,
+        "amount": amount.value,
+        "merchant_id": merchantID.value
+    };
 
-var iframeProceed =
+    var xmlhttp = new XMLHttpRequest();
+    var url = "http://localhost:3000/payment/getPaymentForm";
+    xmlhttp.open("post", url, false);
+    xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+            if (xmlhttp.status == 200) {
+                var resobj = JSON.parse(xmlhttp.response);
+                document.getElementById("doc").style.display = "none";
+                document.getElementsByTagName("body")[0].style.margin = "0";
+                iframeProceed(resobj.checkout_url);
+                console.log();
+            } else {
+
+            }
+        }
+    };
+    xmlhttp.send(JSON.stringify(data));
+}
+
+var phoneValidateStr = eval(phoneValidate);
+var proceedPaymStr = eval(sendData);
+var hideFistFrmStr = eval(hideFirstFrm);
+var callbackStr = eval(__DEFAULTCALLBACK__);
+
+var scrpt = phoneValidateStr + " " + proceedPaymStr + " " + hideFistFrmStr + " " + callbackStr;
+
+var paymentStyle =
     'var checkoutStyles = {' +
     '".btn-lime" : {' +
     '"margin-top" : "0"' +
@@ -229,44 +251,11 @@ var iframeProceed =
     '});' +
     '}';
 
-
-var iframeDefaultCallback =
-    'function __DEFAULTCALLBACK__(data,type){' +
-    'var form;' +
-    'if ( data.error){' +
-    'return;' +
-    '}' +
-    'if (data.action == "redirect") {' +
-    'this.loadUrl(data.url);' +
-    'return;' +
-    '}' +
-    'if (data.send_data.order_status == "delayed") {' +
-    'this.unbind("ready");' +
-    'this.hide();' +
-    'return;' +
-    '} else {' +
-    'this.unbind("ready").action("ready", function() {' +
-    'this.show();' +
-    '});' +
-    '}' +
-    'if( data.send_data && data.url ){' +
-    'form = prepareFormData(data.url,data.send_data);' +
-    'this.find("body").appendChild(form);' +
-    'form.submit();' +
-    'form.parentNode.removeChild(form);';
-
-var paymntFrameStileScrpt = "";
-
-
 prepareScriptTag("http://localhost:3000/javascripts/ipsp.js");
 prepareHTML(html);
-prepareStyle(css);
 prepareStyle(initialCss);
-prepareScript(phoneValidateScript);
-prepareScript(iframeDefaultCallback);
-prepareScript(iframeScript);
-prepareScript(iframeProceed);
-prepareScript(iframeHideIndex);
+prepareScript(scrpt);
+prepareScript(paymentStyle);
 
 
 var bottmStl = ".bottom {background-color:" + initScriptTag.getAttribute("data-bottom-background") + "};";
@@ -284,22 +273,6 @@ prepareStyle(inpClr);
 var inpBorder = "input, select {border:" + initScriptTag.getAttribute("data-input-border") + "};";
 prepareStyle(inpBorder);
 
-//data-input-border
-//data-button-color
-//data-input-color
-
-console.log(ifrm.offsetHeight);
-console.log(ifrm.style.height);
-
-function responsiveFrame() {
-
-}
-
-
-//if (script.hasAttribute('data-color')) {
-//}
-
-
 /**
  *
  * @param ifrm iframe element
@@ -309,6 +282,7 @@ function initFrame(ifrm, container) {
     setStyles(ifrm);
     container.appendChild(ifrm);
 }
+
 /**
  * set iframe styles according to attributes that passed to init script
  */

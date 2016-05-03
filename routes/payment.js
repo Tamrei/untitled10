@@ -43,6 +43,9 @@ function getSignaturizableStr(obj) {
     return result;
 }
 
+router.get('/', function (req, res, next) {
+    res.render('iframe', {title: 'Express'});
+});
 
 router.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
