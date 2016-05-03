@@ -159,12 +159,6 @@ function phoneValidate() {
     xmlhttp.send(JSON.stringify(data));
 }
 
-function hideFirstFrm() {
-    //document.getElementById("doc").style.display = "none";
-    //document.getElementsByTagName("body")[0].style.margin = "0";
-    //iframeProceed();
-}
-
 function __DEFAULTCALLBACK__(data, type) {
     var form;
     if (data.error) {
@@ -216,7 +210,7 @@ function sendData() {
                 var resobj = JSON.parse(xmlhttp.response);
                 document.getElementById("doc").style.display = "none";
                 document.getElementsByTagName("body")[0].style.margin = "0";
-                iframeProceed(resobj.checkout_url);
+                ifrmProceed(resobj.checkout_url);
             } else {
 
             }
@@ -246,15 +240,7 @@ var paymentStyle =
     '".btn-lime" : {' +
     '"margin-top" : "0"' +
     '}' +
-    '};' +
-    'function iframeProceed(url) {' +
-    '$ipsp("checkout").scope(function() {' +
-    'this.setCheckoutWrapper("#checkout_wrapper");' +
-    'this.setCssStyle(checkoutStyles);' +
-    'this.addCallback(__DEFAULTCALLBACK__);' +
-    'this.loadUrl(url);' +
-    '});' +
-    '}';
+    '};';
 
 prepareScriptTag("http://localhost:3000/javascripts/ipsp.js");
 prepareHTML(html);
