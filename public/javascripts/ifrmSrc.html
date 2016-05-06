@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--<script src="https://api.fondy.eu/static_common/v1/checkout/ipsp.js"></script>-->
+    <script src="/javascripts/ipsp.js"></script>
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+<script>
+    console.log("================");
+    console.log(document);
+    console.log("================");
+</script>
+
+<div id="step1">
+
+    <div id="checkout_wrapper">
+        <div id="doc">
+            <form id="phone_form" style="margin: 8px 8px 0 8px;">
+                <!--<label for="order_id">Order_id</label>-->
+                <!--<input type="text" id="order_id" name="order_id" value="test4207135583456">-->
+                <label for="phone_number">Phone number</label>
+                <input type="text" onchange="phoneValidate()" id="phone_number" name="phone_number" placeholder="phone_number">
+                <label for="order_desc">Order desc</label>
+                <input type="text" id="order_desc" name="order_desc" value="Test payment">
+                <!--<input type="text" id="amount" name="amount" value="100">-->
+                <div class="inline-frm">
+                    <label for="amount">Amount</label>
+                    <select id="amount" name="amount" style="margin-right: 6px;">
+                        <option value="500">5</option>
+                        <option value="1000">10</option>
+                        <option value="2000">20</option>
+                        <option value="5000">50</option>
+                        <option value="10000">100</option>
+                        <option value="20000">200</option>
+                        </select>
+                    <label for="currency">Currency</label>
+                    <select id="currency" name="currency" style="margin-left: 6px;">
+                        <option value="RUB">RUB</option>
+                        <option value="EUR">EUR</option>
+                        </select>
+                    </div>
+                <label for="merchant_id">merchant_id (use 1396424 for testing)</label>
+                <input type="text" id="merchant_id" name="merchant_id" value="1396424">
+                </form>
+            <div class="bottom" style="position: absolute; width: 100%; padding-bottom: 100%; text-align: center;">
+                <button onclick="sendData()" style="margin-top: 10px; font-size: 18px;">Proceed Payment</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+<div id="step2" style="display: none;">
+    <button onclick="sendData()" style="margin-top: 10px; font-size: 18px;">Proceed Payment</button>
+    </div>
+<script>
+
+    function phoneValidate() {
+        var phone_number = document.getElementById("phone_number");
+        var phone_form = document.getElementById("phone_form");
+        var data = {phone_number: phone_number.value};
+        var xmlhttp = new XMLHttpRequest();
+        var url = "http://localhost:3000/validatePhone";
+        xmlhttp.open("post", url, true);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    if (xmlhttp.response == "error") {
+                        console.log("error");
+                        document.getElementById("phone_number").style.border = "1px solid red";
+                    } else if (xmlhttp.response == "success") {
+                        console.log("success");
+                    } else {
+                    }
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(data));
+    }
+
+
+    function __DEFAULTCALLBACK__(data, type) {
+        var form;
+        if (data.error) {
+            return;
+        }
+        if (data.action == "redirect") {
+            this.loadUrl(data.url);
+            return;
+        }
+        if (data.send_data.order_status == "delayed") {
+            this.unbind("ready");
+            this.hide();
+            return;
+        } else {
+            this.unbind("ready").action("ready", function () {
+                this.show();
+            });
+        }
+        if (data.send_data && data.url) {
+            form = prepareFormData(data.url, data.send_data);
+            this.find("body").appendChild(form);
+            form.submit();
+            form.parentNode.removeChild(form);
+        }
+    }
+
+    var socketId;
+
+    function sendData() {
+        //'var orderId = document.getElementById("order_id");' +
+        var orderDesc = document.getElementById("order_desc");
+        var currency = document.getElementById("currency");
+        var amount = document.getElementById("amount");
+        var merchantID = document.getElementById("merchant_id");
+
+        var data = {
+            //'"order_id": orderId.value,' +
+            "order_desc": orderDesc.value,
+            "currency": currency.value,
+            "amount": amount.value,
+            "merchant_id": merchantID.value,
+            "response_url": "http://localhost:3000/successPage/" + socketId
+            //"response_url": "http://localhost:3000/formId/" + someId
+            //"response_url": "http://localhost:63342/ticetsua/23.html" //fow window close
+        };
+
+        /* put this in other place after */
+        function popupwindow(url, title, w, h) {
+            var left = (screen.width / 2)-(w / 2);
+            var top = (screen.height / 2)-(h / 2);
+            return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+        }
+
+        var xmlhttp = new XMLHttpRequest();
+        var url = "http://localhost:3000/getPaymentForm";
+        xmlhttp.open("post", url, false);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    var resobj = JSON.parse(xmlhttp.response);
+                    /* iframe redirect */
+                    //document.getElementById("doc").style.display = "none";
+                    //document.getElementsByTagName("body")[0].style.margin = "0";
+                    //ifrmProceed(resobj.checkout_url);
+
+                    //window.open(resobj.checkout_url, "", "width=600, height=700");
+
+                    /*
+                     var url = resobj.checkout_url;
+                     var w = 600;
+                     var h = 700;
+
+                     // Fixes dual-screen position                         Most browsers      Firefox
+                     var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+                     var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+                     var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+                     var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+                     var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+                     var top = ((height / 2) - (h / 2)) + dualScreenTop;
+                     var newWindow = window.open(url, "", 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+                     // Puts focus on the newWindow
+                     if (window.focus) {
+                     newWindow.focus();
+                     }
+                     */
+
+                    popupwindow(resobj.checkout_url, "" , 400, 600);
+
+                } else {
+
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(data));
+    }
+
+    var socket = io.connect("http://localhost:3000");
+
+    socket.on('connect', function() {
+        //socket.io.engine.id = 55;
+        var sessionid = socket.io.engine.id;
+        socketId = sessionid;
+        console.log(sessionid);
+        socket.emit('typing', 'test msg');
+    });
+
+    socket.on('servRespond', function (data) {
+        console.log(data);
+    });
+
+    socket.on('someEvent', function(msg){
+        console.log("private : " + msg);
+    });
+
+    function ifrmProceed(url) {
+        $ipsp("checkout").scope(function () {
+            this.setCheckoutWrapper("#checkout_wrapper");
+            this.setCssStyle(checkoutStyles);
+            this.addCallback(__DEFAULTCALLBACK__);
+            this.loadUrl(url);
+        });
+    }
+</script>
+
+</body>
+</html>

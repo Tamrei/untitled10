@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head><title>Ticket</title>
+</head>
+<body>
+
+<div id="id_holder" > <%= title %> </div>
+<h1>  </h1>
+
+<script>
+    var id = document.getElementById("id_holder");
+    console.log(id.innerText);
+
+    /*
+    function sendData() {
+        var data = {
+            widgetId: id.innerText
+        };
+
+        var xmlhttp = new XMLHttpRequest();
+        var url = "http://localhost:3000/formId";
+        xmlhttp.open("post", url, false);
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    //alert(xmlhttp.response);
+                } else {
+
+                }
+            }
+        };
+        xmlhttp.send(JSON.stringify(data));
+    }
+    */
+
+    //sendData();
+
+    localStorage.setItem("pay_success", id.innerText);
+    window.close();
+
+    //"http://localhost:3000/formId/" + someId
+    //
+</script>
+
+</body>
+</html>

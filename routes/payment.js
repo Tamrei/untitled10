@@ -10,7 +10,6 @@ var request = require('request');
 
 var uuid = require('uuid');
 
-
 function sortObject(o) {
     var sorted = {},
         key, a = [];
@@ -53,6 +52,43 @@ router.use(function(req, res, next) {
     next();
 });
 
+//var io = require('socket.io').listen(3002);
+
+//io.on('connection', function(socket){
+//});
+
+
+
+
+
+//io.emit('servRespond', 'test');
+
+
+
+
+// router.post('/formId', function (req, res, next) {
+//     console.log("SECOND CALLBACK : " + req.body.widgetId);
+//     res.status(200).end();
+//     /*request({
+//         url: 'http://localhost:3000/successPay/' + req.params.id, method: "GET",
+//         headers: {"content-type": "application/x-www-form-urlencoded"}, body: stq
+//     }, function (error, response, body) {
+//
+//     });*/
+// });
+
+// http://localhost:3000/socket.io/socket.io.js
+
+router.post('/getSocket', function (req, res, next) {
+
+    request({
+        url: 'http://localhost:3000/socket.io/socket.io.js', method: "GET"//,
+        //headers: {"content-type": "application/x-www-form-urlencoded"}
+    }, function (error, response, body) {
+        res.send(body);
+    });
+
+});
 
 router.post('/getPaymentForm', function (req, res, next) {
     var data = req.body;
@@ -73,10 +109,10 @@ router.post('/getPaymentForm', function (req, res, next) {
     }, function (error, response, body) {
         var resObj = (qs.parse(body));
         if (resObj.response_status == "success") {
-            console.log(resObj);
+            //console.log(resObj);
             res.send(resObj);
         } else {
-            console.log(resObj);
+            //console.log(resObj);
             res.status(500).end();
         }
     });
@@ -100,13 +136,11 @@ router.post('/validatePhone', function (req, res, next) {
         url: 'http://192.168.150.162:9004/can-topup', method: "POST",
         headers: {"content-type": "application/json"}, body: JSON.stringify(obj)
     }, function (error, response, body) {
-
         if (error) {
             res.status(500).end();
         }
 
         var resp = JSON.parse(body);
-        console.log(resp);
 
         if (resp.can_topup_account == true) {
             res.send("success");
